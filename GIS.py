@@ -54,11 +54,9 @@ if uploaded_file is not None:
 
         def to_excel(df):
             output = BytesIO()
-            writer = pd.ExcelWriter(output, engine='xlsxwriter')
-            df.to_excel(writer, index=False, sheet_name='Sheet1')
-            writer.save()
-            processed_data = output.getvalue()
-            return processed_data
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                df.to_excel(writer, index=False, sheet_name='Sheet1')
+            return output.getvalue()
         
         # Konversi DataFrame ke file Excel
         excel_data = to_excel(concatenated_df)
