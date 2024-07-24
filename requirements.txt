@@ -1,5 +1,6 @@
 lxml
 openpyxl
+xlsxwriter
 fuzzywuzzy
 firebase_admin
 pandas == 2.2.2
