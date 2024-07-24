@@ -5,6 +5,7 @@ import time
 import datetime as dt
 import re
 import streamlit as st
+from io import BytesIO
 
 st.markdown('GIS')
 selected_option = st.selectbox("Pilih salah satu:", ['32.17','32.15','32.23'])
