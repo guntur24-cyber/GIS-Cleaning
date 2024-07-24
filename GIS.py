@@ -7,7 +7,7 @@ import re
 import streamlit as st
 
 st.markdwon('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['32.17','32.15','32.23')
+selected_option = st.selectbox("Pilih salah satu:", ['32.17','32.15','32.23'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx")
 
 if uploaded_file is not None:
