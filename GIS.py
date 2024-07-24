@@ -6,7 +6,7 @@ import datetime as dt
 import re
 import streamlit as st
 
-st.markdwon('GIS')
+st.markdown('GIS')
 selected_option = st.selectbox("Pilih salah satu:", ['32.17','32.15','32.23'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx")
 
