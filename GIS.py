@@ -132,7 +132,7 @@ if uploaded_file is not None:
                 )          
 
             if selected_option=='32.23':
-                df_3223 = pd.read_excel(uploaded_file, header=4).fillna('')
+                df_3223 = pd.read_excel(uploaded_file[0], header=4).fillna('')
                 df_3223 = df_3223.iloc[:-5]
                 dfDPB       =       dfDPBread.loc[:,["Nama Cabang",
                                      "Nomor #",
