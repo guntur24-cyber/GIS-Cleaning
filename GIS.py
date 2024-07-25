@@ -223,58 +223,69 @@ if uploaded_file is not None:
                 )   
 
             if selected_option=='42.08':
-                df_4208     =   pd.read_excel(uploaded_file[0], header=4).fillna('')
-                df_4208     =   df_4208.drop(df_4208.columns[[0, 1]], axis=1)
-                df_4208     =   df_4208.rename(columns={'Kode Barang':'Nama Barang','Unnamed: 3':'Cabang','Unnamed: 4':'Nomor #',df_4208.columns[4]:'Barang','Unnamed: 9':'Tanggal','Unnamed: 11':'Deskripsi','Unnamed: 14':'Satuan','Unnamed: 16':'Masuk','Unnamed: 18':'Keluar','Unnamed: 20':'Saldo'})
-
-                # Drop columns that start with 'Unnamed'
-                df_4208 = df_4208.loc[:, ~df_4208.columns.str.startswith('Unnamed')].drop(columns=(':'))
-                for i in range(len(df_4208)):
-                    if df_4208['Deskripsi'][i].startswith("Saldo Barang"):
-                        if i + 1 < len(df_4208) and df_4208['Tanggal'][i+1] != "":
-                            df_4208.at[i, 'Tanggal'] = 'BOTTOM'
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4208     =   pd.read_excel(file, header=4).fillna('')
+                
+                    df_4208 = df_4208.drop(df_4208.columns[[0, 1]], axis=1)
+                
+                    df_4208     =   df_4208.rename(columns={'Kode Barang':'Nama Barang','Unnamed: 3':'Cabang','Unnamed: 4':'Nomor #',df_4208.columns[4]:'Barang','Unnamed: 9':'Tanggal','Unnamed: 11':'Deskripsi','Unnamed: 14':'Satuan','Unnamed: 16':'Masuk','Unnamed: 18':'Keluar','Unnamed: 20':'Saldo'})
+                
+                    # Drop columns that start with 'Unnamed'
+                    df_4208 = df_4208.loc[:, ~df_4208.columns.str.startswith('Unnamed')].drop(columns=(':'))
+                
+                    for i in range(len(df_4208)):
+                        if df_4208['Deskripsi'][i].startswith("Saldo Barang"):
+                            if ((i + 1) < len(df_4208)) and (df_4208['Tanggal'][i+1] != ""):
+                                df_4208.at[i, 'Tanggal'] = 'BOTTOM'
+                            else:
+                                df_4208.at[i, 'Tanggal'] = 'TOP'
+                
+                    # Forward fill 'BOTTOM' and backward fill 'TOP'
+                    df_4208['Tanggal'] = df_4208['Tanggal'].replace('BOTTOM', method='bfill').replace('TOP', method='ffill')
+                
+                    # Check for consecutive blank rows
+                    def is_blank_row(row):
+                        return all(cell == '' for cell in row)
+                
+                    # Track indices of rows to delete
+                    rows_to_delete = []
+                    consecutive_blanks = 0
+                
+                    for i, row in df_4208.iterrows():
+                        if is_blank_row(row):
+                            consecutive_blanks += 1
+                            if consecutive_blanks == 9:
+                                # Mark the 9 rows for deletion
+                                rows_to_delete.extend(range(i - 8, i + 1))
+                                consecutive_blanks = 0  # Reset the counter after marking
                         else:
-                            df_4208.at[i, 'Tanggal'] = 'TOP'
+                            consecutive_blanks = 0  # Reset the counter if a row is not blank
                 
-                # Forward fill 'BOTTOM' and backward fill 'TOP'
-                df_4208['Tanggal'] = df_4208['Tanggal'].replace('BOTTOM', method='bfill').replace('TOP', method='ffill')
-
-                # Check for consecutive blank rows
-                def is_blank_row(row):
-                    return all(cell == '' for cell in row)
+                    # Drop the rows
+                    df_4208 = df_4208.drop(rows_to_delete)
                 
-                # Track indices of rows to delete
-                rows_to_delete = []
-                consecutive_blanks = 0
+                    # Reset the index of the DataFrame
+                    df_4208.reset_index(drop=True, inplace=True)
                 
-                for i, row in df_4208.iterrows():
-                    if is_blank_row(row):
-                        consecutive_blanks += 1
-                        if consecutive_blanks == 9:
-                            # Mark the 9 rows for deletion
-                            rows_to_delete.extend(range(i - 8, i + 1))
-                            consecutive_blanks = 0  # Reset the counter after marking
-                    else:
-                        consecutive_blanks = 0  # Reset the counter if a row is not blank
+                    # Forward fill the 'Barang' column
+                    df_4208['Barang'] = df_4208['Barang'].replace('', pd.NA).ffill()
+                    # Forward fill the 'Cabang' column
+                    df_4208['Cabang'] = df_4208['Cabang'].replace('', pd.NA).ffill()
                 
-                # Drop the rows
-                df_4208 = df_4208.drop(rows_to_delete)
+                    df_4208     =   df_4208[df_4208['Nomor #']      !=      "Nomor #"]
+                    df_4208     =   df_4208[df_4208['Nomor #']      !=      ""]
                 
-                # Reset the index of the DataFrame
-                df_4208.reset_index(drop=True, inplace=True)
-
-                df_4208['Barang'] = df_4208['Barang'].replace('', pd.NA).ffill()
-                # Forward fill the 'Cabang' column
-                df_4208['Cabang'] = df_4208['Cabang'].replace('', pd.NA).ffill()
-
-                df_4208     =   df_4208[df_4208['Nomor #']      !=      "Nomor #"]
-                df_4208     =   df_4208[df_4208['Nomor #']      !=      ""]
-
-                df_4208['Nama Barang']     =   df_4208['Barang']
-                # Drop the 'Barang' column
-                df_4208 = df_4208.drop(columns='Barang')
-                df_4208['Tanggal']      =   pd.to_datetime(df_4208['Tanggal'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d/%m/%Y')
-
+                    df_4208['Nama Barang']     =   df_4208['Barang']
+                
+                    # Drop the 'Barang' column
+                    df_4208 = df_4208.drop(columns='Barang')
+                
+                    df_4208['Tanggal']      =   pd.to_datetime(df_4208['Tanggal'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d/%m/%Y')
+                    concatenated_df.append(df_4208)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                
                 excel_data = to_excel(df_4208)
                 st.download_button(
                     label="Download Excel",
