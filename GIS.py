@@ -54,7 +54,7 @@ if uploaded_file is not None:
         def to_excel(df):
             output = BytesIO()
             with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                df.to_excel(writer, index=False, sheet_name='Sheet1')
+                df.to_excel(writer, index=False, sheet_name='Sheet1', header=False)
             processed_data = output.getvalue()
             return processed_data
         
