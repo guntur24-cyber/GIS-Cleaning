@@ -221,7 +221,49 @@ if uploaded_file is not None:
                     file_name='42.05.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
+                
+            if selected_option=='42.06':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4206     =   pd.read_excel(file, header=3).fillna('')
+                    df_4206     =   df_4206.drop(df_4206.columns[[0, 0]], axis=1)
+                    
+                    df_4206 = df_4206.rename(columns={
+                        'Unnamed: 1': 'Kode Barang',
+                        'Unnamed: 5': 'Nama Barang',
+                        'Unnamed: 7': 'Nama Gudang',
+                        'Unnamed: 11': 'Nomor #',
+                        'Unnamed: 13': 'Tanggal',
+                        'Unnamed: 15': 'Deskripsi',
+                        'Unnamed: 18': 'Keterangan Transaksi',
+                        'Unnamed: 20': 'Satuan',
+                        'Unnamed: 22': 'Masuk',
+                        'Unnamed: 24': 'Keluar',
+                        'Unnamed: 26': 'Saldo'
+                    })
+                    
+                    df_4206     =       df_4206.loc[:, ~df_4206.columns.str.startswith('Unnamed')]
+                    
+                    df_4206['Nama Gudang'] = df_4206['Nama Gudang'].replace('', pd.NA)
+                    df_4206['Nama Gudang'] = df_4206['Nama Gudang'].fillna(method='ffill')
+                    
+                    filter_strings = ['ACCURATE', 'Tercetak', 'Halaman', 'PPA', '#42.06', 'Dari', 'Kode Barang','Kode','Barang']
+                    mask = ~df_4206['Kode Barang'].str.startswith(tuple(filter_strings))
+                    df_4206 = df_4206[mask]
+                    
+                    df_4206     =       df_4206[df_4206['Kode Barang'] != '']
+                    concatenated_df.append(df_4206)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)      
+                excel_data = to_excel(concatenated_df)
 
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='42.06.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+                
             if selected_option=='42.08':
                 concatenated_df = []
                 for file in uploaded_file:
