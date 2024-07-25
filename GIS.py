@@ -8,7 +8,7 @@ import streamlit as st
 from io import BytesIO
 from xlsxwriter import Workbook
 
-st.markdown('GIS')
+st.title('GIS')
 selected_option = st.selectbox("Pilih salah satu:", ['32.17','32.15','32.23'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx")
 
@@ -58,15 +58,12 @@ if uploaded_file is not None:
             processed_data = output.getvalue()
             return processed_data
         
-        # Tombol untuk mengunduh file Excel
-        st.title("Unduh DataFrame sebagai Excel")
-        st.write("Klik tombol di bawah untuk mengunduh file Excel:")
         
         excel_data = to_excel(concatenated_df)
         st.download_button(
             label="Download Excel",
             data=excel_data,
-            file_name='dataframe.xlsx',
+            file_name='32.07.xlsx',
             mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
 
