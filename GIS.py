@@ -37,6 +37,58 @@ if uploaded_file is not None:
 
     if st.button('Process'):
         with st.spinner('Data sedang diproses...'):
+            if selected_option=='22.05':
+                df_2205 = pd.read_excel(uploaded_file[0], skiprows=4).fillna('')
+                df_2205 = df_2205.iloc[:-5]
+                df_2205 = df_2205.loc[:, ~df_2205.columns.str.startswith('Unnamed:')]
+                
+                excel_data = to_excel(df_2205)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='22.05.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+
+            if selected_option=='22.19':
+                df_2219 = pd.read_excel(uploaded_file[0]).fillna('')
+
+                # Drop the first four columns
+                df_2219 = df_2219.iloc[:, 2:]
+                # Drop the first three rows
+                df_2219 = df_2219.iloc[3:, :]
+                # Reset the index (optional, if you want a clean index)
+                df_2219.reset_index(drop=True, inplace=True)
+                
+                # Set the first row as the header
+                df_2219.columns = df_2219.iloc[0]  # Set the first row as the column headers
+                df_2219 = df_2219.drop(df_2219.index[0])  # Drop the first row now that it's the header
+                
+                # Reset the index again (optional, if you want a clean index)
+                df_2219.reset_index(drop=True, inplace=True)
+                # Fill the blank "Pelanggan" cells with the preceding value
+                df_2219['Nama Cabang'] = df_2219['Nama Cabang'].replace('', None).ffill()
+                
+                # Fill the blank "Pelanggan" cells with the preceding value
+                df_2219['Pelanggan'] = df_2219['Pelanggan'].replace('', None).ffill()
+                
+                # Convert "Tgl. SI #" column to datetime format
+                df_2219['Tgl. SI #'] = pd.to_datetime(df_2219['Tgl. SI #'], format='%d/%m/%Y')
+                
+                # Format "Total" column as numbers (assuming they are stored as strings)
+                df_2219['Total'] = pd.to_numeric(df_2219['Total'])
+                
+                df_2219 =       df_2219[df_2219['Nama Cabang']      !=      "Total Nama Cabang"]
+
+                excel_data = to_excel(df_2219)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='22.19.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+
+            
             if selected_option=='32.07':
                 df  = pd.read_excel(uploaded_file[0],header=1).fillna('')
                 
