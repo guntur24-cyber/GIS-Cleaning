@@ -248,7 +248,7 @@ if uploaded_file is not None:
                 )   
 
             if selected_option=='42.17':
-                df_4217     =   pd.read_excel(uploaded_file, header=4).fillna('')
+                df_4217     =   pd.read_excel(uploaded_file[0], header=4).fillna('')
                 df_4217 = df_4217.drop(columns=[x for x in df_4217.reset_index().T[(df_4217.reset_index().T[1]=='')].index if 'Unnamed' in x])
                 df_4217.columns = df_4217.T.reset_index()['index'].apply(lambda x: np.nan if 'Unnamed' in x else x).ffill().values
                 df_4217 = df_4217.iloc[1:,:-3]
