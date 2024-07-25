@@ -267,8 +267,8 @@ if uploaded_file is not None:
                 # Forward fill the 'Cabang' column
                 df_4208['Cabang'] = df_4208['Cabang'].replace('', pd.NA).ffill()
 
-                df_4208     =   df_4208[df_4208['Deskripsi']      !=      ""]
                 df_4208     =   df_4208[df_4208['Nomor #']      !=      "Nomor #"]
+                df_4208     =   df_4208[df_4208['Nomor #']      !=      ""]
 
                 df_4208['Nama Barang']     =   df_4208['Barang']
                 # Drop the 'Barang' column
