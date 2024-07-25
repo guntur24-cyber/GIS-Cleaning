@@ -9,7 +9,7 @@ from io import BytesIO
 from xlsxwriter import Workbook
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['32.07','32.15','32.23', '42.05','42.08','42.15','42.18'])
+selected_option = st.selectbox("Pilih salah satu:", ['32.07','32.15','32.23', '42.05','42.08','42.15','42.17'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def to_excel(df):
