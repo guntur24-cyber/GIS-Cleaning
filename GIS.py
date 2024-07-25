@@ -127,6 +127,26 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='32.07.xlsx',
+                    file_name='32.15.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )          
+
+            if selected_option=='32.23':
+                df_3223 = pd.read_excel(uploaded_file, header=4).fillna('')
+                df_3223 = df_3223.iloc[:-5]
+                dfDPB       =       dfDPBread.loc[:,["Nama Cabang",
+                                     "Nomor #",
+                                     "Tanggal",
+                                     "Tgl/Jam Pembuatan",
+                                     "Pemasok",
+                                     "Pengiriman"]].rename(columns={'Nomor #':'Nomor'}).fillna("")
+                dfDPB['Tanggal']                = pd.to_datetime(dfDPB['Tanggal'], format='%Y-%m-%d')
+                dfDPB['Tgl/Jam Pembuatan']      = pd.to_datetime(dfDPB['Tgl/Jam Pembuatan'], format='%Y-%m-%d %H:%M:%S')
+                
+                excel_data = to_excel(dfDPB)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='32.23.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
