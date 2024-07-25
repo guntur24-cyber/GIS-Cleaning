@@ -286,7 +286,7 @@ if uploaded_file is not None:
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
                 
-                excel_data = to_excel(df_4208)
+                excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
