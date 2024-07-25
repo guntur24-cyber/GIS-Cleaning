@@ -50,19 +50,23 @@ if uploaded_file is not None:
         concatenated_df['Tanggal # PO']           =   pd.to_datetime(concatenated_df['Tanggal # PO'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y')
         concatenated_df['Tgl/Jam Pembuatan PO#']  =   pd.to_datetime(concatenated_df['Tgl/Jam Pembuatan PO#'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
         concatenated_df['Tgl/Jam Pembuatan PR#']  =   pd.to_datetime(concatenated_df['Tgl/Jam Pembuatan PR#'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
-        
+                
         def to_excel(df):
             output = BytesIO()
-            writer = pd.ExcelWriter(output, engine='xlsxwriter')
-            df.to_excel(writer, index=False, sheet_name='Sheet1')
-            writer.save()
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                df.to_excel(writer, index=False, sheet_name='Sheet1')
             processed_data = output.getvalue()
             return processed_data
-        excel_data = to_excel(df)
-        # Buat tombol unduhan untuk file Excel
+        
+        # Tombol untuk mengunduh file Excel
+        st.title("Unduh DataFrame sebagai Excel")
+        st.write("Klik tombol di bawah untuk mengunduh file Excel:")
+        
+        excel_data = to_excel(concatenated_df)
         st.download_button(
-            label="Unduh file Excel",
+            label="Download Excel",
             data=excel_data,
-            file_name='32.07.xlsx'
+            file_name='dataframe.xlsx',
+            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
 
