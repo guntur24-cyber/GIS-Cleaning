@@ -9,7 +9,7 @@ from io import BytesIO
 from xlsxwriter import Workbook
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['32.07','32.15','32.23'])
+selected_option = st.selectbox("Pilih salah satu:", ['32.07','32.15','32.23', '42.05','42.08','42.15','42.18'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def to_excel(df):
@@ -38,7 +38,7 @@ if uploaded_file is not None:
     if st.button('Process'):
         with st.spinner('Data sedang diproses...'):
             if selected_option=='32.07':
-                df  = pd.read_excel(uploaded_file,header=1).fillna('')
+                df  = pd.read_excel(uploaded_file[0],header=1).fillna('')
                 
                 # Find the indices of start and end markers
                 start_indices = df[df.apply(lambda row: 'Cabang :' in str(row.values), axis=1)].index
@@ -148,5 +148,133 @@ if uploaded_file is not None:
                     label="Download Excel",
                     data=excel_data,
                     file_name='32.23.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+
+            if selected_option=='42.05':
+                df_4205 = pd.read_excel(uploaded_file[0], header=4).fillna('')
+                df_4205 = df_4205.iloc[:-5]
+                df_4205 = df_4205.drop(columns=['Unnamed: 0'])
+                
+                # Rename columns with names like "Unnamed: 1", "Unnamed: 2", etc. to empty strings
+                df_4205.rename(columns=lambda x: '' if 'Unnamed' in x else x, inplace=True)
+                df_4205['Tanggal #Kirim']           =   pd.to_datetime(df_4205['Tanggal #Kirim'], format='%d-%b-%y').dt.strftime('%d %b %Y')
+                df_4205['Tanggal #Terima']          =   pd.to_datetime(df_4205['Tanggal #Terima'], format='%d-%b-%y').dt.strftime('%d %b %Y')
+                df_4205['#Tgl/Jam Pembuatan RI']    =   pd.to_datetime(df_4205['#Tgl/Jam Pembuatan RI'], format='%d-%b-%Y %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
+
+                excel_data = to_excel(df_4205)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='42.05.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+
+            if selected_option=='42.08':
+                df_4208     =   pd.read_excel(uploaded_file[0], header=4).fillna('')
+                df_4208     =   df_4208.drop(df_4208.columns[[0, 1]], axis=1)
+                df_4208     =   df_4208.rename(columns={'Kode Barang':'Nama Barang','Unnamed: 3':'Cabang','Unnamed: 4':'Nomor #','200004':'Barang','Unnamed: 9':'Tanggal','Unnamed: 11':'Deskripsi','Unnamed: 14':'Satuan','Unnamed: 16':'Masuk','Unnamed: 18':'Keluar','Unnamed: 20':'Saldo'})
+
+                # Drop columns that start with 'Unnamed'
+                df_4208 = df_4208.loc[:, ~df_4208.columns.str.startswith('Unnamed')].drop(columns=(':'))
+                for i in range(len(df_4208)):
+                    if df_4208['Deskripsi'][i].startswith("Saldo Barang"):
+                        if i + 1 < len(df_4208) and df_4208['Tanggal'][i+1] != "":
+                            df_4208.at[i, 'Tanggal'] = 'BOTTOM'
+                        else:
+                            df_4208.at[i, 'Tanggal'] = 'TOP'
+                
+                # Forward fill 'BOTTOM' and backward fill 'TOP'
+                df_4208['Tanggal'] = df_4208['Tanggal'].replace('BOTTOM', method='bfill').replace('TOP', method='ffill')
+
+                # Check for consecutive blank rows
+                def is_blank_row(row):
+                    return all(cell == '' for cell in row)
+                
+                # Track indices of rows to delete
+                rows_to_delete = []
+                consecutive_blanks = 0
+                
+                for i, row in df_4208.iterrows():
+                    if is_blank_row(row):
+                        consecutive_blanks += 1
+                        if consecutive_blanks == 9:
+                            # Mark the 9 rows for deletion
+                            rows_to_delete.extend(range(i - 8, i + 1))
+                            consecutive_blanks = 0  # Reset the counter after marking
+                    else:
+                        consecutive_blanks = 0  # Reset the counter if a row is not blank
+                
+                # Drop the rows
+                df_4208 = df_4208.drop(rows_to_delete)
+                
+                # Reset the index of the DataFrame
+                df_4208.reset_index(drop=True, inplace=True)
+
+                df_4208['Barang'] = df_4208['Barang'].replace('', pd.NA).ffill()
+                # Forward fill the 'Cabang' column
+                df_4208['Cabang'] = df_4208['Cabang'].replace('', pd.NA).ffill()
+
+                df_4208     =   df_4208[df_4208['Deskripsi']      !=      ""]
+                df_4208     =   df_4208[df_4208['Nomor #']      !=      "Nomor #"]
+
+                df_4208['Nama Barang']     =   df_4208['Barang']
+                # Drop the 'Barang' column
+                df_4208 = df_4208.drop(columns='Barang')
+                df_4208['Tanggal']      =   pd.to_datetime(df_4208['Tanggal'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d/%m/%Y')
+
+                excel_data = to_excel(df_4208)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='42.08.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+
+            if selected_option=='42.15':
+                df_4215 = pd.read_excel(uploaded_file[0], header=4).fillna('')
+                df_4215 = df_4215.iloc[:-5]
+                df_4215 = df_4215.drop(columns=['Unnamed: 0','Nomor # Permintaan Barang'])
+                df_4215.rename(columns=lambda x: '' if 'Unnamed' in x else x, inplace=True)
+                df_4215['Tanggal']              =   pd.to_datetime(df_4215['Tanggal'], format='%d-%b-%y').dt.strftime('%d %b %Y')
+                df_4215['Tgl/Jam Pembuatan']    =   pd.to_datetime(df_4215['Tgl/Jam Pembuatan'], format='%d-%b-%Y %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
+
+                excel_data = to_excel(df_4215)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='42.15.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+
+            if selected_option=='42.17':
+                df_4217     =   pd.read_excel(uploaded_file, header=4).fillna('')
+                df_4217 = df_4217.drop(columns=[x for x in df_4217.reset_index().T[(df_4217.reset_index().T[1]=='')].index if 'Unnamed' in x])
+                df_4217.columns = df_4217.T.reset_index()['index'].apply(lambda x: np.nan if 'Unnamed' in x else x).ffill().values
+                df_4217 = df_4217.iloc[1:,:-3]
+                
+                df_melted =pd.melt(df_4217, id_vars=['Kode Barang', 'Nama Barang','Kategori Barang'], 
+                    value_vars=df_4217.columns[6:].values,
+                    var_name='Nama Cabang', value_name='Total Stok').reset_index(drop=True)
+
+                df_melted2 = pd.melt(pd.melt(df_4217, id_vars=['Kode Barang', 'Nama Barang','Kategori Barang','Satuan #1','Satuan #2','Satuan #3'], 
+                    value_vars=df_4217.columns[6:].values,
+                    var_name='Nama Cabang', value_name='Total Stok').drop_duplicates(),
+                    id_vars=['Kode Barang', 'Nama Barang','Kategori Barang','Nama Cabang','Total Stok'],
+                    var_name='Variabel', value_name='Satuan')
+
+                df_melted2 = df_melted2[['Kode Barang','Nama Barang','Kategori Barang','Nama Cabang','Satuan','Variabel']].drop_duplicates().reset_index(drop=True)
+
+                df_melted = df_melted.sort_values(['Kode Barang','Nama Cabang']).reset_index(drop=True)
+                df_melted2 = df_melted2.sort_values(['Kode Barang','Nama Cabang']).reset_index(drop=True)
+                
+                df_4217_final = pd.concat([df_melted2.drop(columns='Variabel'), df_melted[['Total Stok']]], axis=1)
+                df_4217_final['Kode Barang'] = df_4217_final['Kode Barang'].astype('int')
+
+                excel_data = to_excel(df_4217_final)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='42.17.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
