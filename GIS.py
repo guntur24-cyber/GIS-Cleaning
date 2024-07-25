@@ -54,7 +54,19 @@ if uploaded_file is not None:
         def to_excel(df):
             output = BytesIO()
             with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                df.to_excel(writer, index=False, sheet_name='Sheet1', header=False)
+                df.to_excel(writer, index=False, sheet_name='Sheet1')
+        
+                # Mengakses workbook dan worksheet untuk format header
+                workbook = writer.book
+                worksheet = writer.sheets['Sheet1']
+                
+                # Menambahkan format khusus untuk header
+                header_format = workbook.add_format({'border': 0, 'bold': False, 'font_size': 12})
+                
+                # Menulis header manual dengan format khusus
+                for col_num, value in enumerate(df.columns.values):
+                    worksheet.write(0, col_num, value, header_format)
+                    
             processed_data = output.getvalue()
             return processed_data
         
