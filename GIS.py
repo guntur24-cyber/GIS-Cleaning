@@ -9,7 +9,7 @@ from io import BytesIO
 from xlsxwriter import Workbook
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['32.07','32.15','32.23', '42.05','42.06','42.08','42.15','42.17'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.10','32.07','32.15','32.23', '42.05','42.06','42.08','42.15','42.17'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def to_excel(df):
@@ -37,6 +37,24 @@ if uploaded_file is not None:
 
     if st.button('Process'):
         with st.spinner('Data sedang diproses...'):
+            
+            if selected_option=='13.10':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_1310 = pd.read_excel(file, skiprows=4).fillna('')
+                    df_1310z = df_1310.iloc[:-5]
+                    df_1310 = df_1310z.loc[:, ~df_1310z.columns.str.startswith('Unnamed:')]
+                    concatenated_df.append(df_1310)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True) 
+                excel_data = to_excel(concatenated_df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='13.10.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+            
             if selected_option=='22.05':
                 df_2205 = pd.read_excel(uploaded_file[0], skiprows=4).fillna('')
                 df_2205 = df_2205.iloc[:-5]
