@@ -56,11 +56,15 @@ if uploaded_file is not None:
                 )   
             
             if selected_option=='22.05':
-                df_2205 = pd.read_excel(uploaded_file[0], skiprows=4).fillna('')
-                df_2205 = df_2205.iloc[:-5]
-                df_2205 = df_2205.loc[:, ~df_2205.columns.str.startswith('Unnamed:')]
-                
-                excel_data = to_excel(df_2205)
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_2205 = pd.read_excel(file, skiprows=4).fillna('')
+                    df_2205 = df_2205.iloc[:-5]
+                    df_2205 = df_2205.loc[:, ~df_2205.columns.str.startswith('Unnamed:')]
+                    concatenated_df.append(df_2205)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
@@ -69,36 +73,40 @@ if uploaded_file is not None:
                 )   
 
             if selected_option=='22.19':
-                df_2219 = pd.read_excel(uploaded_file[0]).fillna('')
-
-                # Drop the first four columns
-                df_2219 = df_2219.iloc[:, 2:]
-                # Drop the first three rows
-                df_2219 = df_2219.iloc[3:, :]
-                # Reset the index (optional, if you want a clean index)
-                df_2219.reset_index(drop=True, inplace=True)
-                
-                # Set the first row as the header
-                df_2219.columns = df_2219.iloc[0]  # Set the first row as the column headers
-                df_2219 = df_2219.drop(df_2219.index[0])  # Drop the first row now that it's the header
-                
-                # Reset the index again (optional, if you want a clean index)
-                df_2219.reset_index(drop=True, inplace=True)
-                # Fill the blank "Pelanggan" cells with the preceding value
-                df_2219['Nama Cabang'] = df_2219['Nama Cabang'].replace('', None).ffill()
-                
-                # Fill the blank "Pelanggan" cells with the preceding value
-                df_2219['Pelanggan'] = df_2219['Pelanggan'].replace('', None).ffill()
-                
-                # Convert "Tgl. SI #" column to datetime format
-                df_2219['Tgl. SI #'] = pd.to_datetime(df_2219['Tgl. SI #'], format='%d/%m/%Y')
-                
-                # Format "Total" column as numbers (assuming they are stored as strings)
-                df_2219['Total'] = pd.to_numeric(df_2219['Total'])
-                
-                df_2219 =       df_2219[df_2219['Nama Cabang']      !=      "Total Nama Cabang"]
-
-                excel_data = to_excel(df_2219)
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_2219 = pd.read_excel(file).fillna('')
+    
+                    # Drop the first four columns
+                    df_2219 = df_2219.iloc[:, 2:]
+                    # Drop the first three rows
+                    df_2219 = df_2219.iloc[3:, :]
+                    # Reset the index (optional, if you want a clean index)
+                    df_2219.reset_index(drop=True, inplace=True)
+                    
+                    # Set the first row as the header
+                    df_2219.columns = df_2219.iloc[0]  # Set the first row as the column headers
+                    df_2219 = df_2219.drop(df_2219.index[0])  # Drop the first row now that it's the header
+                    
+                    # Reset the index again (optional, if you want a clean index)
+                    df_2219.reset_index(drop=True, inplace=True)
+                    # Fill the blank "Pelanggan" cells with the preceding value
+                    df_2219['Nama Cabang'] = df_2219['Nama Cabang'].replace('', None).ffill()
+                    
+                    # Fill the blank "Pelanggan" cells with the preceding value
+                    df_2219['Pelanggan'] = df_2219['Pelanggan'].replace('', None).ffill()
+                    
+                    # Convert "Tgl. SI #" column to datetime format
+                    df_2219['Tgl. SI #'] = pd.to_datetime(df_2219['Tgl. SI #'], format='%d/%m/%Y')
+                    
+                    # Format "Total" column as numbers (assuming they are stored as strings)
+                    df_2219['Total'] = pd.to_numeric(df_2219['Total'])
+                    
+                    df_2219 =       df_2219[df_2219['Nama Cabang']      !=      "Total Nama Cabang"]
+                    concatenated_df.append(df_2219)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
@@ -108,40 +116,43 @@ if uploaded_file is not None:
 
             
             if selected_option=='32.07':
-                df  = pd.read_excel(uploaded_file[0],header=1).fillna('')
-                
-                # Find the indices of start and end markers
-                start_indices = df[df.apply(lambda row: 'Cabang :' in str(row.values), axis=1)].index
-                end_indices = df[df.apply(lambda row: 'ACCURATE Accounting System Report' in str(row.values), axis=1)].index
-                
-                # Concatenate sections into a single DataFrame
-                concatenated_df = pd.concat([df.iloc[start_idx+1:end_idx] for start_idx, end_idx in zip(start_indices, end_indices)], ignore_index=True)
-                
-                # Remove existing header
-                concatenated_df.columns = range(concatenated_df.shape[1])
-                
-                # Set the second row as the new header
-                new_header = concatenated_df.iloc[0]
-                concatenated_df = concatenated_df[1:]
-                concatenated_df.columns = new_header
-                
-                # Delete the blank Column
-                concatenated_df = concatenated_df.loc[:,['Nomor # PR','Tanggal # PR','Nomor # PO','Tanggal # PO','Pemasok','Kode #','Nama Barang','Kuantitas','@Harga','Total Harga','Rasio Satuan','Nama Satuan','Tgl/Jam Pembuatan PO#','Tgl/Jam Pembuatan PR#']]
-                
-                # Drop Unnecessary Column
-                concatenated_df = concatenated_df[concatenated_df['Nomor # PO']     !=      'Nomor # PO']
-                concatenated_df = concatenated_df[concatenated_df['Nomor # PO']     !=      '']
-                
-                
-                # Reset the index
-                concatenated_df.reset_index(drop=True, inplace=True)
-                
-                concatenated_df['Tanggal # PR']           =   pd.to_datetime(concatenated_df['Tanggal # PR'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y')
-                concatenated_df['Tanggal # PO']           =   pd.to_datetime(concatenated_df['Tanggal # PO'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y')
-                concatenated_df['Tgl/Jam Pembuatan PO#']  =   pd.to_datetime(concatenated_df['Tgl/Jam Pembuatan PO#'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
-                concatenated_df['Tgl/Jam Pembuatan PR#']  =   pd.to_datetime(concatenated_df['Tgl/Jam Pembuatan PR#'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
-                
-                
+                concatenated_df = []
+                for file in uploaded_file:
+                    df  = pd.read_excel(file,header=1).fillna('')
+                    
+                    # Find the indices of start and end markers
+                    start_indices = df[df.apply(lambda row: 'Cabang :' in str(row.values), axis=1)].index
+                    end_indices = df[df.apply(lambda row: 'ACCURATE Accounting System Report' in str(row.values), axis=1)].index
+                    
+                    # Concatenate sections into a single DataFrame
+                    df_3207 = pd.concat([df.iloc[start_idx+1:end_idx] for start_idx, end_idx in zip(start_indices, end_indices)], ignore_index=True)
+                    
+                    # Remove existing header
+                    df_3207.columns = range(df_3207.shape[1])
+                    
+                    # Set the second row as the new header
+                    new_header = df_3207.iloc[0]
+                    df_3207 = df_3207[1:]
+                    df_3207.columns = new_header
+                    
+                    # Delete the blank Column
+                    df_3207 = df_3207.loc[:,['Nomor # PR','Tanggal # PR','Nomor # PO','Tanggal # PO','Pemasok','Kode #','Nama Barang','Kuantitas','@Harga','Total Harga','Rasio Satuan','Nama Satuan','Tgl/Jam Pembuatan PO#','Tgl/Jam Pembuatan PR#']]
+                    
+                    # Drop Unnecessary Column
+                    df_3207 = df_3207[df_3207['Nomor # PO']     !=      'Nomor # PO']
+                    df_3207 = df_3207[df_3207['Nomor # PO']     !=      '']
+                    
+                    
+                    # Reset the index
+                    df_3207.reset_index(drop=True, inplace=True)
+                    
+                    df_3207['Tanggal # PR']           =   pd.to_datetime(df_3207['Tanggal # PR'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y')
+                    df_3207['Tanggal # PO']           =   pd.to_datetime(df_3207['Tanggal # PO'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y')
+                    df_3207['Tgl/Jam Pembuatan PO#']  =   pd.to_datetime(df_3207['Tgl/Jam Pembuatan PO#'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
+                    df_3207['Tgl/Jam Pembuatan PR#']  =   pd.to_datetime(df_3207['Tgl/Jam Pembuatan PR#'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
+                    concatenated_df.append(df_3207)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
                 excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
@@ -202,18 +213,22 @@ if uploaded_file is not None:
                 )          
 
             if selected_option=='32.23':
-                df_3223 = pd.read_excel(uploaded_file[0], header=4).fillna('')
-                df_3223 = df_3223.iloc[:-5]
-                dfDPB       =       df_3223.loc[:,["Nama Cabang",
-                                     "Nomor #",
-                                     "Tanggal",
-                                     "Tgl/Jam Pembuatan",
-                                     "Pemasok",
-                                     "Pengiriman"]].rename(columns={'Nomor #':'Nomor'}).fillna("")
-                dfDPB['Tanggal']                = pd.to_datetime(dfDPB['Tanggal'], format='%Y-%m-%d')
-                dfDPB['Tgl/Jam Pembuatan']      = pd.to_datetime(dfDPB['Tgl/Jam Pembuatan'], format='%Y-%m-%d %H:%M:%S')
-                
-                excel_data = to_excel(dfDPB)
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_3223 = pd.read_excel(file, header=4).fillna('')
+                    df_3223 = df_3223.iloc[:-5]
+                    dfDPB       =       df_3223.loc[:,["Nama Cabang",
+                                         "Nomor #",
+                                         "Tanggal",
+                                         "Tgl/Jam Pembuatan",
+                                         "Pemasok",
+                                         "Pengiriman"]].rename(columns={'Nomor #':'Nomor'}).fillna("")
+                    dfDPB['Tanggal']                = pd.to_datetime(dfDPB['Tanggal'], format='%Y-%m-%d')
+                    dfDPB['Tgl/Jam Pembuatan']      = pd.to_datetime(dfDPB['Tgl/Jam Pembuatan'], format='%Y-%m-%d %H:%M:%S')
+                    concatenated_df.append(dfDPB)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
@@ -222,17 +237,21 @@ if uploaded_file is not None:
                 )   
 
             if selected_option=='42.05':
-                df_4205 = pd.read_excel(uploaded_file[0], header=4).fillna('')
-                df_4205 = df_4205.iloc[:-5]
-                df_4205 = df_4205.drop(columns=['Unnamed: 0'])
-                
-                # Rename columns with names like "Unnamed: 1", "Unnamed: 2", etc. to empty strings
-                df_4205.rename(columns=lambda x: '' if 'Unnamed' in x else x, inplace=True)
-                df_4205['Tanggal #Kirim']           =   pd.to_datetime(df_4205['Tanggal #Kirim'], format='%d-%b-%y').dt.strftime('%d %b %Y')
-                df_4205['Tanggal #Terima']          =   pd.to_datetime(df_4205['Tanggal #Terima'], format='%d-%b-%y').dt.strftime('%d %b %Y')
-                df_4205['#Tgl/Jam Pembuatan RI']    =   pd.to_datetime(df_4205['#Tgl/Jam Pembuatan RI'], format='%d-%b-%Y %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
-
-                excel_data = to_excel(df_4205)
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4205 = pd.read_excel(file, header=4).fillna('')
+                    df_4205 = df_4205.iloc[:-5]
+                    df_4205 = df_4205.drop(columns=['Unnamed: 0'])
+                    
+                    # Rename columns with names like "Unnamed: 1", "Unnamed: 2", etc. to empty strings
+                    df_4205.rename(columns=lambda x: '' if 'Unnamed' in x else x, inplace=True)
+                    df_4205['Tanggal #Kirim']           =   pd.to_datetime(df_4205['Tanggal #Kirim'], format='%d-%b-%y').dt.strftime('%d %b %Y')
+                    df_4205['Tanggal #Terima']          =   pd.to_datetime(df_4205['Tanggal #Terima'], format='%d-%b-%y').dt.strftime('%d %b %Y')
+                    df_4205['#Tgl/Jam Pembuatan RI']    =   pd.to_datetime(df_4205['#Tgl/Jam Pembuatan RI'], format='%d-%b-%Y %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
+                    concatenated_df.append(df_4205)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
@@ -355,14 +374,18 @@ if uploaded_file is not None:
                 )   
 
             if selected_option=='42.15':
-                df_4215 = pd.read_excel(uploaded_file[0], header=4).fillna('')
-                df_4215 = df_4215.iloc[:-5]
-                df_4215 = df_4215.drop(columns=['Unnamed: 0','Nomor # Permintaan Barang'])
-                df_4215.rename(columns=lambda x: '' if 'Unnamed' in x else x, inplace=True)
-                df_4215['Tanggal']              =   pd.to_datetime(df_4215['Tanggal'], format='%d-%b-%y').dt.strftime('%d %b %Y')
-                df_4215['Tgl/Jam Pembuatan']    =   pd.to_datetime(df_4215['Tgl/Jam Pembuatan'], format='%d-%b-%Y %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
-
-                excel_data = to_excel(df_4215)
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4215 = pd.read_excel(file, header=4).fillna('')
+                    df_4215 = df_4215.iloc[:-5]
+                    df_4215 = df_4215.drop(columns=['Unnamed: 0','Nomor # Permintaan Barang'])
+                    df_4215.rename(columns=lambda x: '' if 'Unnamed' in x else x, inplace=True)
+                    df_4215['Tanggal']              =   pd.to_datetime(df_4215['Tanggal'], format='%d-%b-%y').dt.strftime('%d %b %Y')
+                    df_4215['Tgl/Jam Pembuatan']    =   pd.to_datetime(df_4215['Tgl/Jam Pembuatan'], format='%d-%b-%Y %H:%M:%S').dt.strftime('%d %b %Y %H:%M:%S')
+                    concatenated_df.append(df_4215)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
@@ -371,30 +394,34 @@ if uploaded_file is not None:
                 )   
 
             if selected_option=='42.17':
-                df_4217     =   pd.read_excel(uploaded_file[0], header=4).fillna('')
-                df_4217 = df_4217.drop(columns=[x for x in df_4217.reset_index().T[(df_4217.reset_index().T[1]=='')].index if 'Unnamed' in x])
-                df_4217.columns = df_4217.T.reset_index()['index'].apply(lambda x: np.nan if 'Unnamed' in x else x).ffill().values
-                df_4217 = df_4217.iloc[1:,:-3]
-                
-                df_melted =pd.melt(df_4217, id_vars=['Kode Barang', 'Nama Barang','Kategori Barang'], 
-                    value_vars=df_4217.columns[6:].values,
-                    var_name='Nama Cabang', value_name='Total Stok').reset_index(drop=True)
-
-                df_melted2 = pd.melt(pd.melt(df_4217, id_vars=['Kode Barang', 'Nama Barang','Kategori Barang','Satuan #1','Satuan #2','Satuan #3'], 
-                    value_vars=df_4217.columns[6:].values,
-                    var_name='Nama Cabang', value_name='Total Stok').drop_duplicates(),
-                    id_vars=['Kode Barang', 'Nama Barang','Kategori Barang','Nama Cabang','Total Stok'],
-                    var_name='Variabel', value_name='Satuan')
-
-                df_melted2 = df_melted2[['Kode Barang','Nama Barang','Kategori Barang','Nama Cabang','Satuan','Variabel']].drop_duplicates().reset_index(drop=True)
-
-                df_melted = df_melted.sort_values(['Kode Barang','Nama Cabang']).reset_index(drop=True)
-                df_melted2 = df_melted2.sort_values(['Kode Barang','Nama Cabang']).reset_index(drop=True)
-                
-                df_4217_final = pd.concat([df_melted2.drop(columns='Variabel'), df_melted[['Total Stok']]], axis=1)
-                df_4217_final['Kode Barang'] = df_4217_final['Kode Barang'].astype('int')
-
-                excel_data = to_excel(df_4217_final)
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4217     =   pd.read_excel(file, header=4).fillna('')
+                    df_4217 = df_4217.drop(columns=[x for x in df_4217.reset_index().T[(df_4217.reset_index().T[1]=='')].index if 'Unnamed' in x])
+                    df_4217.columns = df_4217.T.reset_index()['index'].apply(lambda x: np.nan if 'Unnamed' in x else x).ffill().values
+                    df_4217 = df_4217.iloc[1:,:-3]
+                    
+                    df_melted =pd.melt(df_4217, id_vars=['Kode Barang', 'Nama Barang','Kategori Barang'], 
+                        value_vars=df_4217.columns[6:].values,
+                        var_name='Nama Cabang', value_name='Total Stok').reset_index(drop=True)
+    
+                    df_melted2 = pd.melt(pd.melt(df_4217, id_vars=['Kode Barang', 'Nama Barang','Kategori Barang','Satuan #1','Satuan #2','Satuan #3'], 
+                        value_vars=df_4217.columns[6:].values,
+                        var_name='Nama Cabang', value_name='Total Stok').drop_duplicates(),
+                        id_vars=['Kode Barang', 'Nama Barang','Kategori Barang','Nama Cabang','Total Stok'],
+                        var_name='Variabel', value_name='Satuan')
+    
+                    df_melted2 = df_melted2[['Kode Barang','Nama Barang','Kategori Barang','Nama Cabang','Satuan','Variabel']].drop_duplicates().reset_index(drop=True)
+    
+                    df_melted = df_melted.sort_values(['Kode Barang','Nama Cabang']).reset_index(drop=True)
+                    df_melted2 = df_melted2.sort_values(['Kode Barang','Nama Cabang']).reset_index(drop=True)
+                    
+                    df_4217_final = pd.concat([df_melted2.drop(columns='Variabel'), df_melted[['Total Stok']]], axis=1)
+                    df_4217_final['Kode Barang'] = df_4217_final['Kode Barang'].astype('int')
+                    concatenated_df.append(df_4217_final)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
