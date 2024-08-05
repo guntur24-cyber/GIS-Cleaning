@@ -416,9 +416,10 @@ if uploaded_file is not None:
                     df_melted = df_melted.sort_values(['Kode Barang','Nama Cabang']).reset_index(drop=True)
                     df_melted2 = df_melted2.sort_values(['Kode Barang','Nama Cabang']).reset_index(drop=True)
                     
-                    df_4217_final = pd.concat([df_melted2.drop(columns='Variabel'), df_melted[['Total Stok']]], axis=1)
+                    df_4217_final = pd.concat([df_melted2, df_melted[['Total Stok']]], axis=1)
+                    df_4217_final = df_4217_final.rename(columns={'Variabel':'Kategori'})[['Kode Barang','Nama Barang','Kategori Barang','Nama Cabang','Kategori','Satuan','Total Stok']]
                     df_4217_final['Kode Barang'] = df_4217_final['Kode Barang'].astype('int')
-                    concatenated_df.append(df_4217_final)
+                    df_4217_final['Total Stok'] = df_4217_final['Total Stok'].astype('float')
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
                 excel_data = to_excel(concatenated_df)
