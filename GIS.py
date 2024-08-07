@@ -7,11 +7,16 @@ import re
 import streamlit as st
 from io import BytesIO
 from xlsxwriter import Workbook
+import pytz
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['13.10','32.07','32.15','32.23', '42.05','42.06','42.08','42.15','42.17'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.10','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
+def get_current_time_gmt7():
+    tz = pytz.timezone('Asia/Jakarta')
+    return datetime.now(tz).strftime('%Y%m%d_%H%M%S')
+    
 def to_excel(df):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
@@ -235,7 +240,29 @@ if uploaded_file is not None:
                     file_name='32.23.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
-
+                
+            if selected_option=='41.01':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4101 =   pd.read_excel(file, header=4)
+                    df_4101['Nama Cabang']   =   df_4101['Nama Cabang'].astype(str)
+                    
+                    data_remove = ["Nama Cabang", "GiS", "#41.01", "Dari", "Cabang", "nan"]
+                    
+                    df_4101a = df_4101[~df_4101['Nama Cabang'].str.startswith(tuple(data_remove))]
+                    
+                    df_4101a = df_4101a.loc[:, ~df_4101.columns.str.startswith('Unnamed')]
+                    concatenated_df.append(df_4101a)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name='41.01.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+                
             if selected_option=='42.05':
                 concatenated_df = []
                 for file in uploaded_file:
@@ -427,6 +454,6 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='42.17.xlsx',
+                    file_name=f'42.17_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
