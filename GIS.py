@@ -56,7 +56,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='13.10.xlsx',
+                    file_name=f'13.10_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
             
@@ -73,7 +73,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='22.05.xlsx',
+                    file_name=f'22.05_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
 
@@ -115,7 +115,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='22.19.xlsx',
+                    file_name=f'22.19_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
 
@@ -162,7 +162,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='32.07.xlsx',
+                    file_name=f'32.07_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )
         
@@ -213,7 +213,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='32.15.xlsx',
+                    file_name=f'32.15_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )          
 
@@ -237,7 +237,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='32.23.xlsx',
+                    file_name=f'32.23_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
                 
@@ -259,7 +259,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='41.01.xlsx',
+                    file_name=f'41.01_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
                 
@@ -282,7 +282,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='42.05.xlsx',
+                    file_name=f'42.05_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
                 
@@ -324,7 +324,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='42.06.xlsx',
+                    file_name=f'42.06_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
                 
@@ -397,7 +397,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='42.08.xlsx',
+                    file_name=f'42.08_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
 
@@ -417,7 +417,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name='42.15.xlsx',
+                    file_name=f'42.15_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
 
@@ -449,6 +449,7 @@ if uploaded_file is not None:
                     df_4217_final['Kode Barang'] = df_4217_final['Kode Barang'].astype('int')
                     df_4217_final['Total Stok'] = df_4217_final['Total Stok'].astype('float')
                     concatenated_df.append(df_4217_final)
+                    
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
                 excel_data = to_excel(concatenated_df)
                 st.download_button(
