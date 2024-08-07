@@ -15,7 +15,7 @@ uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_fil
 
 def get_current_time_gmt7():
     tz = pytz.timezone('Asia/Jakarta')
-    return datetime.now(tz).strftime('%Y%m%d_%H%M%S')
+    return dt.datetime.now(tz).strftime('%Y%m%d_%H%M%S')
     
 def to_excel(df):
     output = BytesIO()
