@@ -448,7 +448,7 @@ if uploaded_file is not None:
                     df_4217_final = df_4217_final.rename(columns={'Variabel':'Kategori'})[['Kode Barang','Nama Barang','Kategori Barang','Nama Cabang','Kategori','Satuan','Total Stok']]
                     df_4217_final['Kode Barang'] = df_4217_final['Kode Barang'].astype('int')
                     df_4217_final['Total Stok'] = df_4217_final['Total Stok'].astype('float')
-                    
+                    concatenated_df.append(df_4217_final)
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
                 excel_data = to_excel(concatenated_df)
                 st.download_button(
