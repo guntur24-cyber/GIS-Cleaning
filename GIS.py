@@ -245,13 +245,24 @@ if uploaded_file is not None:
                 concatenated_df = []
                 for file in uploaded_file:
                     df_4101 =   pd.read_excel(file, header=4)
-                    df_4101['Nama Cabang']   =   df_4101['Nama Cabang'].astype(str)
+                    df_4101['Nama Cabang'] = df_4101['Nama Cabang'].astype(str)
                     
-                    data_remove = ["Nama Cabang", "GiS", "#41.01", "Dari", "Cabang", "nan"]
-                    
+                    data_remove = ["Nama Cabang", "GiS", "#41.01", "Dari", "Cabang"]
                     df_4101a = df_4101[~df_4101['Nama Cabang'].str.startswith(tuple(data_remove))]
                     
+                    df_4101a['Nama Cabang'] = df_4101a['Nama Cabang'].replace('nan', "")
+                    
+                    df_4101a['Keterangan'] = df_4101a['Keterangan'].fillna("").astype(str)
+                    
+                    df_4101a['Keterangan'] = df_4101a.groupby((df_4101a['Nomor #'].notna()).cumsum())['Keterangan'].transform(lambda x: ' '.join(x))
+                    
                     df_4101a = df_4101a.loc[:, ~df_4101.columns.str.startswith('Unnamed')]
+                    
+                    df_4101a = df_4101a[df_4101a['Nama Cabang'] != ""]
+                    
+                    df_4101a['Tanggal'] = pd.to_datetime(df_4101a['Tanggal'], format='%d/%m/%Y %H:%M:%S')
+                    
+                    df_4101a['Tanggal'] = df_4101a['Tanggal'].dt.strftime('%d/%m/%Y')
                     concatenated_df.append(df_4101a)
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
