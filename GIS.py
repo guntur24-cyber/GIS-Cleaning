@@ -10,7 +10,7 @@ from xlsxwriter import Workbook
 import pytz
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['13.10','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.10','22.05','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def get_current_time_gmt7():
