@@ -10,7 +10,7 @@ from xlsxwriter import Workbook
 import pytz
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['13.10','22.05','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17','44.08'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.10','13.66','22.05','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17','44.08','99.01'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def get_current_time_gmt7():
@@ -59,6 +59,28 @@ if uploaded_file is not None:
                     file_name=f'13.10_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
+
+            if selected_option=='13.66':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_1366 = pd.read_excel(file, header=4).fillna('')
+                    df_1366 = df_1366.iloc[:-5]
+                    df_1366 = df_1366.loc[:, ~df_1366.columns.str.startswith('Unnamed:')]
+                    df_1366['Tanggal']           =   pd.to_datetime(df_1366['Tanggal'], format='%Y/%m/%d').dt.strftime('%d/%m/%Y')
+                    df_1366['Debit']    =   pd.to_numeric(df_1366['Debit'])
+                    df_1366['Kredit']   =   pd.to_numeric(df_1366['Kredit'])
+                    df_1366['Hari']     =   pd.to_numeric(df_1366['Hari'])
+                    concatenated_df.append(df_1366)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True) 
+                excel_data = to_excel(concatenated_df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name=f'13.66_{get_current_time_gmt7()}.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+            
             
             if selected_option=='22.05':
                 concatenated_df = []
@@ -487,3 +509,21 @@ if uploaded_file is not None:
                     file_name=f'44.08_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
+                
+            if selected_option=='99.01':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_1310 = pd.read_excel(file, skiprows=4).fillna('')
+                    df_1310z = df_1310.iloc[:-5]
+                    df_1310 = df_1310z.loc[:, ~df_1310z.columns.str.startswith('Unnamed:')]
+                    concatenated_df.append(df_1310)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True) 
+                excel_data = to_excel(concatenated_df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name=f'13.10_{get_current_time_gmt7()}.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+            
