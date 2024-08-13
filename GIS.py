@@ -9,6 +9,20 @@ from io import BytesIO
 from xlsxwriter import Workbook
 import pytz
 
+def download_file_from_github(url, save_path):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(save_path, 'wb') as file:
+            file.write(response.content)
+        print(f"File downloaded successfully and saved to {save_path}")
+    else:
+        print(f"Failed to download file. Status code: {response.status_code}")
+
+def load_excel(file_path):
+    with open(file_path, 'rb') as file:
+        model = pd.read_excel(file, engine='openpyxl')
+    return model
+
 st.title('GIS')
 selected_option = st.selectbox("Pilih salah satu:", ['13.10','13.66','22.05','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17','44.08','99.01'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
@@ -511,19 +525,52 @@ if uploaded_file is not None:
                 )   
                 
             if selected_option=='99.01':
+                # URL file model .pkl di GitHub (gunakan URL raw dari file .pkl di GitHub)
+                url = 'https://raw.githubusercontent.com/ferifirmansah05/ads_mvn/main/database provinsi.xlsx'
+                
+                # Path untuk menyimpan file yang diunduh
+                save_path = 'database provinsi.xlsx'
+                
+                # Unduh file dari GitHub
+                download_file_from_github(url, save_path)
+                
+                # Muat model dari file yang diunduh
+                if os.path.exists(save_path):
+                    df_prov = load_excel(save_path)
+                else:
+                    print("file does not exist")
+                    
                 concatenated_df = []
                 for file in uploaded_file:
-                    df_1310 = pd.read_excel(file, skiprows=4).fillna('')
-                    df_1310z = df_1310.iloc[:-5]
-                    df_1310 = df_1310z.loc[:, ~df_1310z.columns.str.startswith('Unnamed:')]
-                    concatenated_df.append(df_1310)
+                    df_9901 = pd.read_excel(file).fillna('')
+                    df_9901 = df_9901.loc[:,['Nama Cabang', 'Nomor #', 'Tanggal', 'Pemasok',
+                           'Kategori Pemasok', '#Group', 'Kode #', 'Nama Barang',
+                           'Kategori Barang', '#Purch.Qty', '#Purch.UoM', '#Prime.Ratio',
+                           '#Prime.Qty', '#Prime.UoM', '#Purch.@Price', '#Purch.Discount', 
+                           '#Prime.NetPrice', '#Purch.Total']].fillna('')
+                    df_9901['Nama Cabang'] = df_9901['Nama Cabang'].str.split('.').str[1]
+
+                    df_prov = df_prov[3:].dropna(subset=['Unnamed: 4']) 
+                    df_prov.columns = df_prov.loc[3,:].values
+                    df_prov = df_prov.loc[4:,]
+                    df_prov = df_prov.loc[:265, ['Nama','Provinsi Alamat','Kota Alamat']]
+                    df_prov = df_prov.rename(columns={'Nama':'Nama Cabang','Provinsi Alamat':'Provinsi Gudang', 'Kota Alamat': 'Kota/Kabupaten'})
+                    df_prov['Nama Cabang'] = df_prov['Nama Cabang'].str.extract(r'\((.*?)\)')
+                    
+                    df_9901 = pd.merge(df_9901, df_prov, how='left', on='Nama Cabang').fillna('')
+                    # Convert 'Tanggal' column to datetime format
+                    df_9901['Tanggal'] = pd.to_datetime(df_9901['Tanggal'])
+                    
+                    # Extract month names from the 'Tanggal' column
+                    df_9901['Month'] = df_9901['Tanggal'].dt.strftime('%B')
+                    concatenated_df.append(df_9901)
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True) 
                 excel_data = to_excel(concatenated_df)
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name=f'13.10_{get_current_time_gmt7()}.xlsx',
+                    file_name=f'99.01_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
             
