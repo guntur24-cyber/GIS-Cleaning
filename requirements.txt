@@ -1,9 +1,4 @@
 lxml
 openpyxl
 xlsxwriter
-fuzzywuzzy
-firebase_admin
-pandas == 2.2.2
-streamlit
-html5lib
-beautifulsoup4
+streamlit_option_menu 
