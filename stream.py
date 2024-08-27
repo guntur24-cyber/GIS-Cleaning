@@ -26,7 +26,7 @@ def load_excel(file_path):
     return model
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['13.10','13.66','22.05','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17','44.08','99.01'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17','44.08','99.01'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def get_current_time_gmt7():
@@ -114,6 +114,35 @@ if uploaded_file is not None:
                     file_name=f'22.05_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
+                
+            if selected_option=='22.16':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_2216 = pd.read_excel(file)#.fillna('')
+                    
+                    # Drop the first four columns
+                    df_2216 = df_2216.loc[:df_2216.shape[0]-2,df_2216.columns.tolist()[:2] + df_2216.columns.tolist()[4:]].drop(columns=df_2216.columns[-2])
+                    dfs = []
+                    x=0
+                    for i in range(1,int((len(df_2216.columns)-2)/4)):
+                        df = df_2216.loc[:,df_2216.columns[:2].tolist()[:2]+df_2216.columns[2+x:6+x].tolist()]
+                        df.columns = df.iloc[3,:2].values.tolist() + df.iloc[4,2:].values.tolist()
+                        df['Bulan'] = df.iloc[3,2]
+                        df = df.iloc[5:,]
+                        x =+4
+                        dfs.append(df)
+                    
+                    concatenated_df.append(pd.concat(dfs,ignore_index=True))
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name=f'22.16_{get_current_time_gmt7()}.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+
 
             if selected_option=='22.19':
                 concatenated_df = []
