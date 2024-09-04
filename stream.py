@@ -464,9 +464,11 @@ if uploaded_file is not None:
                     df_4208['Nama Barang']     =   df_4208['Barang']
                 
                     # Drop the 'Barang' column
-                    df_4208 = df_4208.drop(columns='Barang')
-                
+                    df_4208 = df_4208.drop(columns='Barang').reset_index(drop=True)
                     df_4208['Tanggal']      =   pd.to_datetime(df_4208['Tanggal'], format='%Y-%m-%d %H:%M:%S').dt.strftime('%d/%m/%Y')
+                    for i in df_4208[df_4208['Masuk']==''].index:
+                        df_4208.loc[i-1,'Deskripsi'] = df_4208.loc[i-1,'Deskripsi']+df_4208.loc[i,'Deskripsi']
+                    df_4208 = df_4208[df_4208['Masuk']!='']
                     concatenated_df.append(df_4208)
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
