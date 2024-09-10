@@ -53,7 +53,7 @@ def to_excel(df):
     return processed_data
             
 if uploaded_file is not None:
-    st.write('File berhasil diupload')
+    #st.write('File berhasil diupload')
     # Baca konten zip file
 
     if st.button('Process'):
@@ -607,4 +607,4 @@ if uploaded_file is not None:
                     file_name=f'99.01_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
-            
+
