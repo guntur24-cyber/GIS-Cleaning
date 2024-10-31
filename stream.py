@@ -599,7 +599,7 @@ if uploaded_file is not None:
                 concatenated_df = []
                 for file in uploaded_file:
                     df_9901 = pd.read_excel(file).fillna('')
-                    df_9901 = df_9901.loc[:,['Nama Cabang', 'Nomor #', 'Tanggal', 'Pemasok',
+                    df_9901 = df_9901.loc[:,['Nama Cabang', 'Nama Gudang', 'Nomor #', 'Tanggal', 'Pemasok',
                            'Kategori Pemasok', '#Group', 'Kode #', 'Nama Barang',
                            'Kategori Barang', '#Purch.Qty', '#Purch.UoM', '#Prime.Ratio',
                            '#Prime.Qty', '#Prime.UoM', '#Purch.@Price', '#Purch.Discount', 
