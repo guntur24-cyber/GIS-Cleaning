@@ -596,6 +596,12 @@ if uploaded_file is not None:
                 else:
                     print("file does not exist")
                     
+                df_prov = df_prov[3:].dropna(subset=['Unnamed: 4']) 
+                df_prov.columns = df_prov.loc[3,:].values
+                df_prov = df_prov.loc[4:,]
+                df_prov = df_prov.loc[:265, ['Nama','Provinsi Alamat','Kota Alamat']]
+                df_prov = df_prov.rename(columns={'Nama':'Nama Cabang','Provinsi Alamat':'Provinsi Gudang', 'Kota Alamat': 'Kota/Kabupaten'})
+                df_prov['Nama Cabang'] = df_prov['Nama Cabang'].str.extract(r'\((.*?)\)') 
                 concatenated_df = []
                 for file in uploaded_file:
                     df_9901 = pd.read_excel(file).fillna('')
@@ -606,12 +612,7 @@ if uploaded_file is not None:
                            '#Prime.NetPrice', '#Purch.Total']].fillna('')
                     df_9901['Nama Cabang'] = df_9901['Nama Cabang'].str.split('.').str[1]
 
-                    df_prov = df_prov[3:].dropna(subset=['Unnamed: 4']) 
-                    df_prov.columns = df_prov.loc[3,:].values
-                    df_prov = df_prov.loc[4:,]
-                    df_prov = df_prov.loc[:265, ['Nama','Provinsi Alamat','Kota Alamat']]
-                    df_prov = df_prov.rename(columns={'Nama':'Nama Cabang','Provinsi Alamat':'Provinsi Gudang', 'Kota Alamat': 'Kota/Kabupaten'})
-                    df_prov['Nama Cabang'] = df_prov['Nama Cabang'].str.extract(r'\((.*?)\)')
+
                     
                     df_9901 = pd.merge(df_9901, df_prov, how='left', on='Nama Cabang').fillna('')
                     # Convert 'Tanggal' column to datetime format
