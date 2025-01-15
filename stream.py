@@ -26,7 +26,7 @@ def load_excel(file_path):
     return model
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['13.01','13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17','44.08','99.01'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.01','13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17','42.18','44.08','99.01'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def get_current_time_gmt7():
@@ -561,7 +561,29 @@ if uploaded_file is not None:
                     file_name=f'42.17_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
-
+                
+            if selected_option=='42.18':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4218     =   pd.read_excel(file).fillna('')
+                    df_4218 = df_4218[3:].dropna(subset=['Unnamed: 4']) 
+                    df_4218.columns = df_4218.loc[3,:].values
+                    df_4218 = df_4218.loc[4:,]
+                    df_4218 = df_4218.loc[:,['Nama','Provinsi Alamat','Kota Alamat']]
+                    df_4218 = df_4218.rename(columns={'Nama':'Nama Cabang','Provinsi Alamat':'Provinsi', 'Kota Alamat': 'Kab/Kota'})
+                    df_4218['Cabang'] = df_4218['Nama Cabang'].str.replace('(NON-AKTIF)','').str.extract(r'\(([^()]*)\)[^()]*$')[0].values
+                    concatenated_df.append(4218)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name=f'42.18_{get_current_time_gmt7()}.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+            
+            
             if selected_option=='44.08':
                 concatenated_df = []
                 for file in uploaded_file:
