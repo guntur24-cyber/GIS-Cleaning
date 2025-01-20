@@ -391,6 +391,7 @@ if uploaded_file is not None:
                 concatenated_df = []
                 for file in uploaded_file:
                     df_4206     =   pd.read_excel(file, header=3).fillna('')
+                    df_4206.columns = [f'Unnamed: {i}' for i in range(len(df_4206.columns))]
                     df_4206     =   df_4206.drop(df_4206.columns[[0, 0]], axis=1)
                     
                     df_4206 = df_4206.rename(columns={
