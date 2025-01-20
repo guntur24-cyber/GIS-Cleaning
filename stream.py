@@ -417,7 +417,7 @@ if uploaded_file is not None:
                     mask = ~df_4206['Kode Barang'].str.startswith(tuple(filter_strings))
                     df_4206 = df_4206[mask]
                     
-                    df_4206     =       df_4206[(df_4206['Kode Barang'] != '') | ~(df_4206['Kode Barang'].str.contains('Filter'))]
+                    df_4206     =       df_4206[(df_4206['Kode Barang'] != '') & ~(df_4206['Kode Barang'].str.contains('Filter'))]
                     concatenated_df.append(df_4206)
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)      
