@@ -26,7 +26,7 @@ def load_excel(file_path):
     return model
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['13.01','13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','42.05','42.06','42.08','42.15','42.17','42.18','44.08','99.01'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.01','13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','41.09','42.05','42.06','42.08','42.15','42.17','42.18','44.08','99.01'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def get_current_time_gmt7():
