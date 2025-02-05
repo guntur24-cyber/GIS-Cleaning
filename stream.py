@@ -363,6 +363,35 @@ if uploaded_file is not None:
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
                 
+            if selected_option=='41.09':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4109 = pd.read_excel(file, header=4)#.fillna('')
+                    df_4109 = df_4109.dropna(axis=1,how='all')
+                    df_4109.columns = (df_4109.T.reset_index()['index'].apply(lambda x: np.nan if 'Unnamed' in x else x).ffill()+df_4109.T.reset_index().iloc[:,1].fillna('')).str.replace('Saldo Awal','').str.replace('Saldo Akhir','').str.replace('Masuk','').str.replace('Keluar','')
+                    
+                    df_4109 = df_4109[~df_4109['Kode Barang'].isna()]
+                    df_4109['Kategori Barang'] = df_4109['Kategori Barang'].ffill()
+                    
+                    df_4109 = df_4109.iloc[:,[0,1,2,3,4,5]].melt(id_vars=['Kategori Barang','Nama Barang','Kode Barang','Nama Satuan'],
+                                                           value_vars=['Kuantitas','Nilai'],value_name='Saldo Awal',var_name='Konversi'
+                                                           ).merge(df_4109.iloc[:,[0,1,2,3,6,7]].melt(id_vars=['Kategori Barang','Nama Barang','Kode Barang','Nama Satuan'],
+                                                           value_vars=['Kuantitas','Nilai'],value_name='Masuk',var_name='Konversi'), on=df_4109.columns[:4].to_list() + ['Konversi']
+                                                           ).merge(df_4109.iloc[:,[0,1,2,3,8,9]].melt(id_vars=['Kategori Barang','Nama Barang','Kode Barang','Nama Satuan'],
+                                                           value_vars=['Kuantitas','Nilai'],value_name='Keluar',var_name='Konversi'), on=df_4109.columns[:4].to_list() + ['Konversi']
+                                                           ).merge(df_4109.iloc[:,[0,1,2,3,10,11]].melt(id_vars=['Kategori Barang','Nama Barang','Kode Barang','Nama Satuan'],
+                                                           value_vars=['Kuantitas','Nilai'],value_name='Saldo Akhir',var_name='Konversi'), on=df_4109.columns[:4].to_list() + ['Konversi']).sort_values(['Kategori Barang','Nama Barang','Konversi'])
+                    concatenated_df.append(df_4109)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name=f'41.09_{get_current_time_gmt7()}.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+                
             if selected_option=='42.05':
                 concatenated_df = []
                 for file in uploaded_file:
