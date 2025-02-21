@@ -602,7 +602,7 @@ if uploaded_file is not None:
                     df_4218 = df_4218.loc[:,['Nama','Jalan Alamat','Provinsi Alamat','Kota Alamat','K.Pos Alamat']]
                     df_4218 = df_4218.rename(columns={'Nama':'Nama Cabang','Provinsi Alamat':'Provinsi', 'Kota Alamat': 'Kab/Kota'})
                     df_4218['Cabang'] = df_4218['Nama Cabang'].str.extract(r'\(([^()]*)\)')[0].values
-                    concatenated_df.append(4218)
+                    concatenated_df.append(df_4218)
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
                 excel_data = to_excel(concatenated_df)
