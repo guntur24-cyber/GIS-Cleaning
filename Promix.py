@@ -69,3 +69,9 @@ if uploaded_file is not None:
             df_promix.columns = ['TANGGAL','NAMA BAHAN','SUMBER','CABANG','QTY']
             df_promix.merge(df_cab,
                             how='left', left_on='CABANG', right_on=df_cab.columns[0]).drop(columns='CABANG').iloc[:,[0,4,5,6,7,8,1,2,3]]
+            st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name=f'13.01_{get_current_time_gmt7()}.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
