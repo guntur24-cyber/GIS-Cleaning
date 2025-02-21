@@ -595,13 +595,13 @@ if uploaded_file is not None:
             if selected_option=='42.18':
                 concatenated_df = []
                 for file in uploaded_file:
-                    df_4218     =   pd.read_excel(file).fillna('')
-                    df_4218 = df_4218[3:].dropna(subset=['Unnamed: 4']) 
+                    df_4218     =   pd.read_excel(file)
+                    df_4218 = df_4218[3:].dropna(subset=['Unnamed: 4']).fillna('')
                     df_4218.columns = df_4218.loc[3,:].values
                     df_4218 = df_4218.loc[4:,]
                     df_4218 = df_4218.loc[:,['Nama','Provinsi Alamat','Kota Alamat']]
                     df_4218 = df_4218.rename(columns={'Nama':'Nama Cabang','Provinsi Alamat':'Provinsi', 'Kota Alamat': 'Kab/Kota'})
-                    df_4218['Cabang'] = df_4218['Nama Cabang'].str.replace('(NON-AKTIF)','').str.extract(r'\(([^()]*)\)[^()]*$')[0].values
+                    df_4218['Cabang'] = df_4218['Nama Cabang'].str.extract(r'\(([^()]*)\)')[0].values
                     concatenated_df.append(4218)
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
