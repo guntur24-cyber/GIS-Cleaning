@@ -5,7 +5,7 @@ from streamlit_option_menu import option_menu
 # Membuat navigasi bar
 option = option_menu(
     menu_title="#FPnA",  # required
-    options=["GIS-Cleaning", "Rekap-SCM", "Promix"],  # required
+    options=["GIS-Cleaning", "SCM-Cleaning"],  # required
     menu_icon="cast",  # optional
     default_index=0,  # optional
     orientation="horizontal",
@@ -26,7 +26,7 @@ if option == 'GIS-Cleaning':
     stream1_url = 'https://raw.githubusercontent.com/Analyst-FPnA/GIS-Cleaning/main/stream.py'
     run_stream_script(stream1_url)
   
-elif option == 'Rekap-SCM':
+elif option == 'SCM-Cleaning':
     stream2_url = 'https://raw.githubusercontent.com/Analyst-FPnA/Rekap-SCM/main/stream.py'
     run_stream_script(stream2_url)
 
