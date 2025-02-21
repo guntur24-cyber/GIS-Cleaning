@@ -29,7 +29,3 @@ if option == 'GIS-Cleaning':
 elif option == 'SCM-Cleaning':
     stream2_url = 'https://raw.githubusercontent.com/Analyst-FPnA/Rekap-SCM/main/stream.py'
     run_stream_script(stream2_url)
-
-elif option == 'Promix':
-    stream3_url = 'https://raw.githubusercontent.com/Analyst-FPnA/GIS-Cleaning/main/Promix.py'
-    run_stream_script(stream3_url)
