@@ -366,11 +366,27 @@ if uploaded_file is not None:
             if selected_option=='41.04':
                 concatenated_df = []
                 for file in uploaded_file:
+                    db_4104 = pd.read_excel(file, header=3)
+                    db_4104 = db_4104.loc[:,['Unnamed: 2','Unnamed: 4']]
+                    db_4104 = db_4104.dropna(subset=['Unnamed: 2'])
+
+                    kode_barang = []
+                    nama_barang = []
+                    
+                    for i in range(0, len(db_4104), 2):
+                        kode_barang.append(db_4104.iloc[i, 1])
+                        nama_barang.append(db_4104.iloc[i+1, 1])
+                        
+                    db = pd.DataFrame({"Kode Barang": kode_barang, "Nama Barang": nama_barang})
+                    
                     df_4104 = pd.read_excel(file, header=6).fillna('')
                     df_4104 = df_4104.loc[:, ~df_4104.columns.str.contains('^Unnamed')]
                     
                     df_4104 = df_4104[~df_4104['Nomor #'].isin(['Nomor #', ''])]
                     df_4104 = df_4104.dropna(subset=['Nomor #'])
+
+                    df_4104 = pd.merge(df_4104, db, how='left', on='Nama Barang').fillna('Cek')
+                    df_4104 = df_4104.loc[:,['Nama Gudang', 'Kode Barang', 'Nama Barang', 'Nomor #', 'Tanggal', 'Kts Masuk', 'Nilai Masuk/Sat', 'Nilai Masuk', 'Kts Keluar', 'Nilai Keluar/Sat', 'Nilai Keluar', 'Kts Akhir', 'Nilai Akhir']]
                     
                     concatenated_df.append(df_4104)
                     
