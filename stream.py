@@ -26,7 +26,7 @@ def load_excel(file_path):
     return model
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['13.01','13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','41.09','42.05','42.06','42.08','42.15','42.17','42.18','44.08','99.01'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.01','13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','41.04','41.09','42.05','42.06','42.08','42.15','42.17','42.18','44.08','99.01'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def get_current_time_gmt7():
@@ -363,6 +363,26 @@ if uploaded_file is not None:
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
                 
+            if selected_option=='41.04':
+                concatenated_df = []
+                for file in uploaded_file:
+                    df_4104 = pd.read_excel(file, header=6).fillna('')
+                    df_4104 = df_4104.loc[:, ~df_4104.columns.str.contains('^Unnamed')]
+                    
+                    df_4104 = df_4104[~df_4104['Nomor #'].isin(['Nomor #', ''])]
+                    df_4104 = df_4104.dropna(subset=['Nomor #'])
+                    
+                    concatenated_df.append(df_4104)
+                    
+                concatenated_df = pd.concat(concatenated_df, ignore_index=True)
+                excel_data = to_excel(concatenated_df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_data,
+                    file_name=f'41.04_{get_current_time_gmt7()}.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )   
+                 
             if selected_option=='41.09':
                 concatenated_df = []
                 for file in uploaded_file:
