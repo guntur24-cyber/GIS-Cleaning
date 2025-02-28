@@ -631,14 +631,12 @@ if uploaded_file is not None:
             if selected_option=='42.18':
                 concatenated_df = []
                 for file in uploaded_file:
-                    df_4218 =   pd.read_excel(file, header:4)
+                    df_4218 =   pd.read_excel(file, header=4)
                     df_4218 =   df_4218.loc[:, ~df_4218.columns.str.contains('^Unnamed')]
                     
                     def format_string(input_str):
                         input_str = str(input_str)
-                    
                         match = re.match(r'([^.\s]+)\.\d+.*?\((.*?)\)', input_str)
-                        
                         if match:
                             return f"{match.group(1)}.{match.group(2)}"
                     
