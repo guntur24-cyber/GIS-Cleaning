@@ -631,13 +631,22 @@ if uploaded_file is not None:
             if selected_option=='42.18':
                 concatenated_df = []
                 for file in uploaded_file:
-                    df_4218     =   pd.read_excel(file)
-                    df_4218 = df_4218[3:].dropna(subset=['Unnamed: 4']).fillna('')
-                    df_4218.columns = df_4218.loc[3,:].values
-                    df_4218 = df_4218.loc[4:,]
-                    df_4218 = df_4218.loc[:,['Nama','Jalan Alamat','Provinsi Alamat','Kota Alamat','K.Pos Alamat']]
-                    df_4218 = df_4218.rename(columns={'Nama':'Nama Cabang','Provinsi Alamat':'Provinsi', 'Kota Alamat': 'Kab/Kota'})
-                    df_4218['Cabang'] = df_4218['Nama Cabang'].str.extract(r'\(([^()]*)\)')[0].values
+                    df_4218 =   pd.read_excel(file, header:4)
+                    df_4218 =   df_4218.loc[:, ~df_4218.columns.str.contains('^Unnamed')]
+                    
+                    def format_string(input_str):
+                        input_str = str(input_str)
+                    
+                        match = re.match(r'([^.\s]+)\.\d+.*?\((.*?)\)', input_str)
+                        
+                        if match:
+                            return f"{match.group(1)}.{match.group(2)}"
+                    
+                    df_4218['Kode'] = df_4218['Nama'].apply(format_string)
+                    df_4218 =   df_4218.dropna(subset=['Nama'])
+                    df_4218 =   df_4218.loc[:,['Kode', 'Nama', 'Deskripsi', 'Jalan Alamat', 'Kota Alamat', 'Provinsi Alamat', 'K.Pos Alamat']]
+                    df_4218['Provinsi Alamat'] = df_4218['Provinsi Alamat'].replace({'Tangerang': 'Banten', 'Daerah Khusus Ibukota Jakarta': 'DKI Jakarta', 'Jakarta': 'DKI Jakarta', 'Jawa Timu': 'Jawa Timur'})
+                    df_4218 =   df_4218.set_index("Kode")
                     concatenated_df.append(df_4218)
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
