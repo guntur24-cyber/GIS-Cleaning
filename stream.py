@@ -655,7 +655,6 @@ if uploaded_file is not None:
                             'Jakarta': 'DKI Jakarta', 
                             'Jawa Timu': 'Jawa Timur'})
                         
-                        df_4218 = df_4218.set_index("Kode")
                         concatenated_df.append(df_4218)
                     
                     if concatenated_df:  # Pastikan ada data sebelum menggabungkan
