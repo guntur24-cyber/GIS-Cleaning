@@ -647,7 +647,6 @@ if uploaded_file is not None:
                         df_4218 = df_4218.dropna(subset=['Nama'])
                         
                         expected_columns = ['Kode', 'Nama', 'Deskripsi', 'Jalan Alamat', 'Kota Alamat', 'Provinsi Alamat', 'K.Pos Alamat']
-                        df_4218 = df_4218.loc[:, [col for col in expected_columns if col in df_4218.columns]]
                         
                         df_4218['Provinsi Alamat'] = df_4218['Provinsi Alamat'].replace({
                             'Tangerang': 'Banten', 
