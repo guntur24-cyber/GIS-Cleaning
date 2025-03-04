@@ -634,14 +634,14 @@ if uploaded_file is not None:
                 if uploaded_file:
                     for file in uploaded_file:
                         df_4218 = pd.read_excel(file, header=4).fillna("")
-                        df_4218 = df_4218.loc[:, ~df_4218.columns.str.contains('^Unnamed')].copy()
+                        df_4218 = df_4218.loc[:, ~df_4218.columns.str.contains('^Unnamed')]
                         
                         def format_string(input_str):
                             input_str = str(input_str)
                             match = re.match(r'([^.\s]+)\.\d+.*?\((.*?)\)', input_str)
+                            
                             if match:
                                 return f"{match.group(1)}.{match.group(2)}"
-                            return input_str  # Jika tidak cocok, kembalikan nilai aslinya
                         
                         df_4218['Kode'] = df_4218['Nama'].apply(format_string)
                         df_4218 = df_4218.dropna(subset=['Nama'])
@@ -653,8 +653,7 @@ if uploaded_file is not None:
                             'Tangerang': 'Banten', 
                             'Daerah Khusus Ibukota Jakarta': 'DKI Jakarta', 
                             'Jakarta': 'DKI Jakarta', 
-                            'Jawa Timu': 'Jawa Timur'
-                        })
+                            'Jawa Timu': 'Jawa Timur'})
                         
                         df_4218 = df_4218.set_index("Kode")
                         concatenated_df.append(df_4218)
