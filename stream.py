@@ -401,6 +401,7 @@ if uploaded_file is not None:
 
             if selected_option=='41.04b':
                 concatenated_df = []
+                for file in uploaded_file:
                     df_4104b = pd.read_excel(file,header=4)
                     df_4104b = df_4104b.dropna(how='all',axis=1)
                     df_4104b = df_4104b.iloc[1:-1,:]
