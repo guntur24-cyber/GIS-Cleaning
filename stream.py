@@ -26,7 +26,7 @@ def load_excel(file_path):
     return model
 
 st.title('GIS')
-selected_option = st.selectbox("Pilih salah satu:", ['13.01','13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','41.04','41.04b','41.09','42.05','42.06','42.08','42.15','42.17','42.18','44.08','99.01'])
+selected_option = st.selectbox("Pilih salah satu:", ['13.01','13.10','13.66','22.05','22.16','22.19','32.07','32.15','32.23','41.01','41.04','41.04.B','41.09','42.05','42.06','42.08','42.15','42.17','42.18','44.08','99.01'])
 uploaded_file = st.file_uploader("Upload File", type="xlsx", accept_multiple_files=True)
 
 def get_current_time_gmt7():
@@ -399,15 +399,15 @@ if uploaded_file is not None:
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )   
 
-            if selected_option=='41.04b':
+            if selected_option=='41.04.B':
                 concatenated_df = []
                 for file in uploaded_file:
                     df_4104b = pd.read_excel(file,header=4)
                     df_4104b = df_4104b.dropna(how='all',axis=1)
                     df_4104b = df_4104b.iloc[1:-1,:]
                     df_db = pd.DataFrame({'variable':[x for x in df_4104b.columns if 'Unnamed' in x],'Nama Barang':[x for x in df_4104b.columns if 'Unnamed' not in x][1:]})
-                    df_4104b = df_4104b.melt(id_vars='Nama Gudang', value_vars=[x for x in df_4104b.columns if 'Unnamed' not in x][1:],value_name='Nilai', var_name='Nama Barang').merge(
-                    df_4104b.melt(id_vars='Nama Gudang', value_vars=[x for x in df_4104b.columns if 'Unnamed' in x],value_name='Kts').merge(df_db,how='left',on='variable'), how='left', on=['Nama Gudang','Nama Barang']).drop(columns='variable')
+                    df_4104b = df_4104b.melt(id_vars='Nama Gudang', value_vars=[x for x in df_4104b.columns if 'Unnamed' not in x][1:],value_name='Nominal Kts Keluar', var_name='Nama Barang').merge(
+                    df_4104b.melt(id_vars='Nama Gudang', value_vars=[x for x in df_4104b.columns if 'Unnamed' in x],value_name='Kts Keluar').merge(df_db,how='left',on='variable'), how='left', on=['Nama Gudang','Nama Barang']).drop(columns='variable')
                     concatenated_df.append(df_4104b)
                     
                 concatenated_df = pd.concat(concatenated_df, ignore_index=True)
@@ -415,7 +415,7 @@ if uploaded_file is not None:
                 st.download_button(
                     label="Download Excel",
                     data=excel_data,
-                    file_name=f'41.04b_{get_current_time_gmt7()}.xlsx',
+                    file_name=f'41.04.B_{get_current_time_gmt7()}.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 ) 
             
